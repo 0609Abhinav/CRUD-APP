@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { createUser, updateUser } from "../api";
+import "./UserForm.css"; // Add custom styles
 
 const UserForm = ({ fetchUsers, editingUser, setEditingUser, closeModal }) => {
   const [name, setName] = useState("");
@@ -20,8 +21,7 @@ const UserForm = ({ fetchUsers, editingUser, setEditingUser, closeModal }) => {
     try {
       if (editingUser) {
         await updateUser(editingUser.id, { name, email });
-        // alert(`User "${name}" updated successfully!`);
-        alert(`User Record updated successfully!`);
+        alert(`User record updated successfully!`);
         setEditingUser(null);
       } else {
         await createUser({ name, email });
@@ -30,8 +30,8 @@ const UserForm = ({ fetchUsers, editingUser, setEditingUser, closeModal }) => {
       fetchUsers();
       closeModal();
     } catch (err) {
-      console.error(err);
-      alert(" Error saving user. Please check console.");
+      console.error("Error saving user:", err);
+      alert("Error saving user. Please check console.");
     }
   };
 
@@ -41,33 +41,37 @@ const UserForm = ({ fetchUsers, editingUser, setEditingUser, closeModal }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="user-form">
-      <h3>{editingUser ? "Edit User" : "Add User"}</h3>
-      <input
-        type="text"
-        placeholder="Name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        required
-      />
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-      />
-      <div className="form-buttons">
-        <button type="submit">{editingUser ? "Update" : "Add"}</button>
-        <button
-          type="button"
-          onClick={handleCancel}
-          style={{ backgroundColor: "#999" }}
-        >
-          Cancel
-        </button>
-      </div>
-    </form>
+    <div className="form-container">
+      <form onSubmit={handleSubmit} className="user-form">
+        <h3>{editingUser ? "Edit User" : "Add User"}</h3>
+        <input
+          type="text"
+          placeholder="Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+        />
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <div className="form-buttons">
+          <button type="submit" className="btn primary">
+            {editingUser ? "Update" : "Add"}
+          </button>
+          <button
+            type="button"
+            onClick={handleCancel}
+            className="btn secondary"
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
   );
 };
 
