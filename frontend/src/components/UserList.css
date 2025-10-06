@@ -152,65 +152,87 @@ body {
   color: #94a3b8;
 }
 
+/* Pagination Container */
 .pagination {
   display: flex;
-  justify-content: flex-end; /* move to the right */
+  justify-content: flex-end; /* right-aligned */
   align-items: center;
   gap: 12px;
-  margin-top: 20px;
+  margin-top: 25px;
   font-size: 15px;
   font-weight: 500;
-  color: #d1d5db; /* gray text for "Page" and "of" */
+  color: #d1d5db;
 }
 
+/* Buttons */
 .pagination button {
-  background: #2563eb;
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
   color: white;
   border: none;
   border-radius: 8px;
-  padding: 8px 14px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-weight: 600;
-}
-
-.pagination button:hover {
-  background: #1e40af;
-}
-
-.pagination button:disabled {
-  background: #9ca3af;
-  cursor: not-allowed;
-}
-
-.page-info {
-  color: #d1d5db; /* gray text for "Page" and "of" */
-}
-
-.page-number {
-  color: #ffffff; /* white numbers */
-  font-weight: 700;
-}
-
-
-.pagination button {
-  background: #3b82f6;
-  color: white;
   padding: 8px 16px;
-  border-radius: 8px;
-  border: none;
   cursor: pointer;
-  transition: 0.3s;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 6px rgba(59, 130, 246, 0.3);
 }
 
 .pagination button:hover:not(:disabled) {
-  background: #2563eb;
+  background: linear-gradient(135deg, #1d4ed8, #2563eb);
+  transform: translateY(-1px);
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.8); /* neon blue glow */
 }
 
 .pagination button:disabled {
-  opacity: 0.5;
+  background: #475569;
+  color: #9ca3af;
   cursor: not-allowed;
+  box-shadow: 0 0 8px rgba(156, 163, 175, 0.2); /* soft gray glow */
 }
+
+/* Page Info ("Page 1 of 3") */
+.page-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #d1d5db;
+}
+
+.page-info input {
+  background: #0f172a;
+  border: 1px solid #334155;
+  color: #f8fafc;
+  width: 50px;
+  text-align: center;
+  border-radius: 6px;
+  padding: 4px;
+  font-weight: 600;
+  transition: 0.2s ease;
+}
+
+.page-info input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.7);
+  outline: none;
+}
+
+/* Per Page Dropdown */
+.pagination select {
+  background: #1e293b;
+  color: #f8fafc;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.3s;
+}
+
+.pagination select:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.6); /* subtle glow */
+}
+
 
 /* Modal */
 .modal-overlay {

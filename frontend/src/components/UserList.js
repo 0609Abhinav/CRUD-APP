@@ -1,29 +1,45 @@
-
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { getUsers, deleteUser } from "../api";
 import UserForm from "./UserForm";
 import "./UserList.css";
 
 const UserList = () => {
+  // State
   const [users, setUsers] = useState([]);
   const [editingUser, setEditingUser] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState(searchTerm);
   const [sortConfig, setSortConfig] = useState({ field: "id", order: "DESC" });
   const [currentPage, setCurrentPage] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
-  const [displayedCount, setDisplayedCount] = useState(0); // for animated counter
+  const [displayedCount, setDisplayedCount] = useState(0);
+  const displayedCountRef = useRef(displayedCount);
   const [totalPages, setTotalPages] = useState(1);
-  const usersPerPage = 8;
+  const [usersPerPage, setUsersPerPage] = useState(8);
+  const [loading, setLoading] = useState(false);
 
+  const pageSizeOptions = [5, 8, 10];
+
+  // Debounce search input
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+      setCurrentPage(1);
+    }, 500);
+    return () => clearTimeout(handler);
+  }, [searchTerm]);
+
+  // Fetch users
   const fetchUsers = useCallback(async () => {
+    setLoading(true);
     try {
       const params = {
         pageNumber: currentPage,
         pageSize: usersPerPage,
-        searchTerm,
+        searchTerm: debouncedSearch,
         sortField: sortConfig.field,
         sortOrder: sortConfig.order,
       };
@@ -40,37 +56,36 @@ const UserList = () => {
       setUsers([]);
       setTotalRecords(0);
       setTotalPages(1);
+    } finally {
+      setLoading(false);
     }
-  }, [currentPage, usersPerPage, searchTerm, sortConfig]);
+  }, [currentPage, usersPerPage, debouncedSearch, sortConfig]);
 
   useEffect(() => {
     fetchUsers();
   }, [fetchUsers]);
 
-  // Animated Counter Effect
-  // Animated Counter Effect (smooth, optimized)
-useEffect(() => {
-  let start = displayedCount;
-  const end = totalRecords;
+  // Animated counter
+  useEffect(() => {
+    let start = displayedCountRef.current;
+    const end = totalRecords;
+    if (start === end) return;
 
-  if (start === end) return; // no need to animate if unchanged
+    const increment = end > start ? 1 : -1;
+    const duration = 600;
+    const stepTime = Math.abs(Math.floor(duration / (end - start || 1)));
 
-  const increment = end > start ? 1 : -1;
-  const duration = 600; // total animation duration (ms)
-  const stepTime = Math.abs(Math.floor(duration / (end - start || 1)));
+    const timer = setInterval(() => {
+      start += increment;
+      displayedCountRef.current = start;
+      setDisplayedCount(start);
+      if (start === end) clearInterval(timer);
+    }, stepTime);
 
-  const timer = setInterval(() => {
-    start += increment;
-    setDisplayedCount(start);
-    if (start === end) clearInterval(timer);
-  }, stepTime);
+    return () => clearInterval(timer);
+  }, [totalRecords]);
 
-  return () => clearInterval(timer);
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-}, [totalRecords]);
-
-
+  // Handlers
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this user?")) {
       try {
@@ -149,10 +164,7 @@ useEffect(() => {
               type="text"
               placeholder="Search users..."
               value={searchTerm}
-              onChange={(e) => {
-                setCurrentPage(1);
-                setSearchTerm(e.target.value);
-              }}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
             <button className="btn primary" onClick={() => openModal()}>
               + Add Member
@@ -162,55 +174,93 @@ useEffect(() => {
 
         {/* Table */}
         <div className="table-wrapper">
-          <table className="user-table">
-            <thead>
-              <tr>
-                <th onClick={() => handleSort("id")}>ID {getSortArrow("id")}</th>
-                <th onClick={() => handleSort("name")}>Name {getSortArrow("name")}</th>
-                <th onClick={() => handleSort("email")}>Email {getSortArrow("email")}</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.length > 0 ? (
-                users.map((user) => (
-                  <tr key={user.id}>
-                    <td>{user.id}</td>
-                    <td>{user.name}</td>
-                    <td>{user.email}</td>
-                    <td>
-                      <button className="btn edit" onClick={() => openModal(user)}>Edit</button>
-                      <button className="btn delete" onClick={() => handleDelete(user.id)}>Delete</button>
+          {loading ? (
+            <div className="loading">Loading users...</div>
+          ) : (
+            <table className="user-table">
+              <thead>
+                <tr>
+                  <th onClick={() => handleSort("id")}>ID {getSortArrow("id")}</th>
+                  <th onClick={() => handleSort("name")}>Name {getSortArrow("name")}</th>
+                  <th onClick={() => handleSort("email")}>Email {getSortArrow("email")}</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {users.length > 0 ? (
+                  users.map((user) => (
+                    <tr key={user.id}>
+                      <td>{user.id}</td>
+                      <td>{user.name}</td>
+                      <td>{user.email}</td>
+                      <td>
+                        <button className="btn edit" onClick={() => openModal(user)}>
+                          Edit
+                        </button>
+                        <button className="btn delete" onClick={() => handleDelete(user.id)}>
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr key="no-data">
+                    <td colSpan="4" className="no-data">
+                      No users found
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="4" className="no-data">No users found</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                )}
+              </tbody>
+            </table>
+          )}
         </div>
 
         {/* Pagination */}
-     {totalPages > 1 && (
-  <div className="pagination">
-    <button onClick={goToPreviousPage} disabled={currentPage === 1}>
-      ← Prev
-    </button>
+        {totalPages > 1 && (
+          <div className="pagination">
+            <button onClick={goToPreviousPage} disabled={currentPage === 1}>
+              ← Prev
+            </button>
 
-    <span className="page-info">
-      Page <span className="page-number">{currentPage}</span> of{" "}
-      <span className="page-number">{totalPages}</span>
-    </span>
+            <span className="page-info">
+              Page{" "}
+              <input
+                type="number"
+                min="1"
+                max={totalPages}
+                value={currentPage}
+                onChange={(e) => {
+                  let page = parseInt(e.target.value, 10);
+                  if (isNaN(page)) page = 1;
+                  if (page < 1) page = 1;
+                  if (page > totalPages) page = totalPages;
+                  setCurrentPage(page);
+                }}
+                style={{ width: "50px", textAlign: "center" }}
+              />{" "}
+              of {totalPages}
+            </span>
 
-    <button onClick={goToNextPage} disabled={currentPage === totalPages}>
-      Next →
-    </button>
-  </div>
-)}
+            <button onClick={goToNextPage} disabled={currentPage === totalPages}>
+              Next →
+            </button>
 
+            <select
+              value={usersPerPage}
+              onChange={(e) => {
+                setUsersPerPage(parseInt(e.target.value, 10));
+                setCurrentPage(1);
+              }}
+              style={{ marginLeft: "10px" }}
+            >
+              {pageSizeOptions.map((size) => (
+                <option key={size} value={size}>
+                  {size} per page
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         {/* Modal */}
         {showForm && (
