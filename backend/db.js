@@ -19,13 +19,13 @@ const sequelize = new Sequelize("myapp", "root", "123456789", {
   dialect: "mysql",
   logging: false,
   dialectOptions: {
-    multipleStatements: true, // ✅ Allow multiple result sets (needed for stored procedures)
+    multipleStatements: true, // Allow multiple result sets (needed for stored procedures)
   },
 });
 
 sequelize
   .authenticate()
-  .then(() => console.log("✅ Sequelize connected to MySQL"))
-  .catch((err) => console.error("❌ Unable to connect:", err));
+  .then(() => console.log(" Sequelize connected to MySQL"))
+  .catch((err) => console.error(" Unable to connect:", err));
 
 module.exports = sequelize;

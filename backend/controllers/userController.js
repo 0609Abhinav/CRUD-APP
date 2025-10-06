@@ -5,7 +5,7 @@ const { Op, QueryTypes } = require("sequelize");
 const User = require("../models/User");
 const sequelize = require("../db");
 
-// ✅ CREATE USER
+// CREATE USER
 exports.createUser = catchAsync(async (req, res) => {
   const { name, email } = req.body;
 
@@ -26,7 +26,7 @@ exports.createUser = catchAsync(async (req, res) => {
   });
 });
 
-// // ✅ GET USERS (search, sort, pagination)
+// // GET USERS (search, sort, pagination)
 // exports.getUsers = catchAsync(async (req, res) => {
 //   const {
 //     pageNumber = 1,
@@ -57,7 +57,7 @@ exports.createUser = catchAsync(async (req, res) => {
 //     totalPages: Math.ceil(count / limit),
 //   });
 // });
-// ✅ GET USERS using Stored Procedure
+// GET USERS using Stored Procedure
 exports.getUsers = catchAsync(async (req, res) => {
   const {
     pageNumber = 1,
@@ -99,7 +99,7 @@ exports.getUsers = catchAsync(async (req, res) => {
   });
 });
 
-// ✅ GET USER BY ID
+//  GET USER BY ID
 exports.getUserById = catchAsync(async (req, res) => {
   const user = await User.findByPk(req.params.id);
   if (!user) {
@@ -111,7 +111,7 @@ exports.getUserById = catchAsync(async (req, res) => {
   });
 });
 
-// ✅ UPDATE USER
+//  UPDATE USER
 exports.updateUser = catchAsync(async (req, res) => {
   const { name, email } = req.body;
 
@@ -142,7 +142,7 @@ exports.updateUser = catchAsync(async (req, res) => {
   });
 });
 
-// ✅ SOFT DELETE USER
+//  SOFT DELETE USER
 exports.deleteUser = catchAsync(async (req, res) => {
   const [deleted] = await User.update(
     { is_deleted: true },
