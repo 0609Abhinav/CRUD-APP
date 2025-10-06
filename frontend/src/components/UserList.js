@@ -1,601 +1,118 @@
-// import React, { useEffect, useState } from "react";
-// import { getUsers, deleteUser } from "../api";
-// import UserForm from "./UserForm";
-// import "./UserList.css";
-
-// const UserList = () => {
-//   const [users, setUsers] = useState([]);
-//   const [editingUser, setEditingUser] = useState(null);
-
-//   // Modal state
-//   const [showForm, setShowForm] = useState(false);
-//   const [isClosing, setIsClosing] = useState(false);
-
-//   // Filter state
-//   const [filterField, setFilterField] = useState("name");
-//   const [filterValue, setFilterValue] = useState("");
-
-//   // Pagination state
-//   const [currentPage, setCurrentPage] = useState(1);
-//   const usersPerPage = 8;
-
-//   // Fetch users
-//   const fetchUsers = async () => {
-//     try {
-//       const res = await getUsers();
-//       const sortedUsers = [...res.data].sort((a, b) => b.id - a.id); // show recent first
-//       setUsers(sortedUsers);
-//     } catch (err) {
-//       console.error(err);
-//       alert("Error fetching users.");
-//     }
-//   };
-
-//   useEffect(() => {
-//     fetchUsers();
-//   }, []);
-
-//   //  Delete user
-//   const handleDelete = async (id) => {
-//     if (window.confirm("Are you sure you want to delete this user?")) {
-//       try {
-//         await deleteUser(id);
-//         fetchUsers();
-//       } catch (err) {
-//         console.error(err);
-//         alert("Error deleting user.");
-//       }
-//     }
-//   };
-
-//   // Filter logic
-//   const filteredUsers = users.filter((user) => {
-//     if (!filterValue) return true;
-//     const value = user[filterField]?.toString().toLowerCase();
-//     return value.includes(filterValue.toLowerCase());
-//   });
-
-//   // Pagination logic
-//   const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
-//   const startIndex = (currentPage - 1) * usersPerPage;
-//   const currentUsers = filteredUsers.slice(startIndex, startIndex + usersPerPage);
-
-//   const goToNextPage = () => setCurrentPage((p) => Math.min(p + 1, totalPages));
-//   const goToPreviousPage = () => setCurrentPage((p) => Math.max(p - 1, 1));
-
-//   // Reset pagination on filter change
-//   useEffect(() => {
-//     setCurrentPage(1);
-//   }, [filterValue]);
-
-//   // Modal controls
-//   const openModal = (user = null) => {
-//     setEditingUser(user);
-//     setShowForm(true);
-//     setIsClosing(false);
-//     document.body.classList.add("modal-open"); // prevent background scroll
-//   };
-
-//   const closeModal = () => {
-//     setIsClosing(true);
-//     setTimeout(() => {
-//       setShowForm(false);
-//       setEditingUser(null);
-//       document.body.classList.remove("modal-open");
-//     }, 300); 
-//   };
-
-//   return (
-//     <div>
-//       <h1>User Management</h1>
-
-//       {/* Add New Member */}
-  
-//       <button  className="add-user-btn" style={{float: 'right',}}onClick={() => openModal()}> + Add New Member
-// </button>
-
-//       {/*  Filter */}
-//       <div className="filter-container">
-//         <label>Filter by:</label>
-//         <select
-//           value={filterField}
-//           onChange={(e) => setFilterField(e.target.value)}
-//         >
-//           <option value="id">ID</option>
-//           <option value="name">Name</option>
-//           <option value="email">Email</option>
-//         </select>
-//         <input
-//           type="text"
-//           placeholder={`Search by ${filterField}`}
-//           value={filterValue}
-//           onChange={(e) => setFilterValue(e.target.value)}
-//         />
-//         {filterValue && (
-//           <button
-//             type="button"
-//             className="clear-btn"
-//             onClick={() => setFilterValue("")}
-//           >
-//             ✕
-//           </button>
-//         )}
-//       </div>
-
-//       {/* User Table */}
-//       <table border="1" cellPadding="6" style={{ marginTop: "10px", width: "100%" }}>
-//         <thead>
-//           <tr>
-//             <th>ID</th>
-//             <th>Name</th>
-//             <th>Email</th>
-//             <th>Actions</th>
-//           </tr>
-//         </thead>
-//         <tbody>
-//           {currentUsers.length > 0 ? (
-//             currentUsers.map((user) => (
-//               <tr key={user.id}>
-//                 <td>{user.id}</td>
-//                 <td>{user.name}</td>
-//                 <td>{user.email}</td>
-//                 <td>
-//                   <button className="edit" onClick={() => openModal(user)}>
-//                     Edit
-//                   </button>
-//                   <button className="delete" onClick={() => handleDelete(user.id)}>
-//                     Delete
-//                   </button>
-//                 </td>
-//               </tr>
-//             ))
-//           ) : (
-//             <tr>
-//               <td colSpan="4" style={{ textAlign: "center" }}>
-//                 No users found
-//               </td>
-//             </tr>
-//           )}
-//         </tbody>
-//       </table>
-
-//       {/* Pagination */}
-//       {filteredUsers.length > usersPerPage && (
-//         <div className="pagination" style={{ marginTop: "10px", textAlign: "center" }}>
-//           <button onClick={goToPreviousPage} disabled={currentPage === 1}>
-//             ← Previous
-//           </button>
-//           <span style={{ margin: "0 10px" }}>
-//             Page {currentPage} of {totalPages}
-//           </span>
-//           <button onClick={goToNextPage} disabled={currentPage === totalPages}>
-//             Next → 
-//           </button>
-//         </div>
-//       )}
-
-//       {/* Modal */}
-//       {showForm && (
-//         <div className={`modal-overlay ${isClosing ? "fade-out" : "fade-in"}`}>
-//           <div className={`modal-content ${isClosing ? "slide-out" : "slide-in"}`}>
-//             <UserForm
-//               fetchUsers={fetchUsers} 
-//               editingUser={editingUser}
-//               setEditingUser={setEditingUser}
-//               closeModal={closeModal}
-//             />
-//           </div>
-//         </div>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default UserList;
-
-
-// import React, { useEffect, useState } from "react";
-// import { getUsers, deleteUser } from "../api";
-// import UserForm from "./UserForm";
-// import "./UserList.css";
-
-// const UserList = () => {
-//   const [users, setUsers] = useState([]);
-//   const [editingUser, setEditingUser] = useState(null);
-
-//   // Modal state
-//   const [showForm, setShowForm] = useState(false);
-//   const [isClosing, setIsClosing] = useState(false);
-
-//   // Filter state
-//   const [filterField, setFilterField] = useState("name");
-//   const [filterValue, setFilterValue] = useState("");
-
-//   // Search state (box on right side)
-//   const [searchTerm, setSearchTerm] = useState("");
-
-//   // Sorting state
-//   const [sortConfig, setSortConfig] = useState({ key: null, mode: null }); 
-//   // mode: "alphabetical" | "original" | null
-
-//   // Pagination
-//   const [currentPage, setCurrentPage] = useState(1);
-//   const usersPerPage = 8;
-
-//   // Fetch users
-//   const fetchUsers = async () => {
-//     try {
-//       const res = await getUsers();
-//       const sortedUsers = [...res.data].sort((a, b) => b.id - a.id); // default: latest first
-//       setUsers(sortedUsers);
-//     } catch (err) {
-//       console.error(err);
-//       alert("Error fetching users.");
-//     }
-//   };
-
-//   useEffect(() => {
-//     fetchUsers();
-//   }, []);
-
-//   // Delete user
-//   const handleDelete = async (id) => {
-//     if (window.confirm("Are you sure you want to delete this user?")) {
-//       try {
-//         await deleteUser(id);
-//         fetchUsers();
-//       } catch (err) {
-//         console.error(err);
-//         alert("Error deleting user.");
-//       }
-//     }
-//   };
-
-//   //  Filter logic (based on dropdown)
-//   const filteredUsers = users.filter((user) => {
-//     if (!filterValue) return true;
-//     const value = user[filterField]?.toString().toLowerCase();
-//     return value.includes(filterValue.toLowerCase());
-//   });
-
-//   // Search logic (box on right, searches all fields)
-//   const searchedUsers = filteredUsers.filter((user) => {
-//     if (!searchTerm) return true;
-//     const term = searchTerm.toLowerCase();
-//     return (
-//       user.id.toString().includes(term) ||
-//       user.name?.toLowerCase().includes(term) ||
-//       user.email?.toLowerCase().includes(term)
-//     );
-//   });
-
-//   // Sorting Logic
-//   const sortedUsers = [...searchedUsers].sort((a, b) => {
-//     if (!sortConfig.key) return 0;
-
-//     const { key, mode } = sortConfig;
-
-//     if (mode === "alphabetical") {
-//       const aVal = a[key]?.toString().toLowerCase();
-//       const bVal = b[key]?.toString().toLowerCase();
-//       if (aVal < bVal) return -1;
-//       if (aVal > bVal) return 1;
-//       return 0;
-//     }
-
-//     if (mode === "original") {
-//       // Sort by date entered → assuming higher ID = later
-//       return b.id - a.id;
-//     }
-
-//     return 0;
-//   });
-
-//   // Sorting toggle: Alphabetical → Original → Alphabetical ...
-//   const handleSort = (key) => {
-//     setSortConfig((prev) => {
-//       if (prev.key === key) {
-//         // Toggle between alphabetical and original
-//         if (prev.mode === "alphabetical") return { key, mode: "original" };
-//         else return { key, mode: "alphabetical" };
-//       } else {
-//         return { key, mode: "alphabetical" };
-//       }
-//     });
-//   };
-
-//   const getSortArrow = (key) => {
-//     if (sortConfig.key !== key) return "↕";
-//     if (sortConfig.mode === "alphabetical") return "▲";
-//     if (sortConfig.mode === "original") return "▼";
-//     return "↕";
-//   };
-
-//   // Pagination
-//   const totalPages = Math.ceil(sortedUsers.length / usersPerPage);
-//   const startIndex = (currentPage - 1) * usersPerPage;
-//   const currentUsers = sortedUsers.slice(startIndex, startIndex + usersPerPage);
-
-//   const goToNextPage = () => setCurrentPage((p) => Math.min(p + 1, totalPages));
-//   const goToPreviousPage = () => setCurrentPage((p) => Math.max(p - 1, 1));
-
-//   useEffect(() => {
-//     setCurrentPage(1);
-//   }, [filterValue, searchTerm]);
-
-//   // Modal controls
-//   const openModal = (user = null) => {
-//     setEditingUser(user);
-//     setShowForm(true);
-//     setIsClosing(false);
-//     document.body.classList.add("modal-open");
-//   };
-
-//   const closeModal = () => {
-//     setIsClosing(true);
-//     setTimeout(() => {
-//       setShowForm(false);
-//       setEditingUser(null);
-//       document.body.classList.remove("modal-open");
-//     }, 300);
-//   };
-
-//   return (
-//     <div>
-//       <h1>User Management</h1>
-
-//       {/* 🔸 Top Bar (Filter + Search + Add) */}
-//       <div
-//         className="top-bar"
-//         style={{
-//           display: "flex",
-//           justifyContent: "space-between",
-//           alignItems: "center",
-//           marginBottom: "10px",
-//           gap: "10px",
-//         }}
-//       >
-//         {/* Filter */}
-//         <div className="filter-container" style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-//           <label>Filter by:</label>
-//           <select value={filterField} onChange={(e) => setFilterField(e.target.value)}>
-//             <option value="id">ID</option>
-//             <option value="name">Name</option>
-//             <option value="email">Email</option>
-//           </select>
-//           <input
-//             type="text"
-//             placeholder={`Search by ${filterField}`}
-//             value={filterValue}
-//             onChange={(e) => setFilterValue(e.target.value)}
-//           />
-//           {filterValue && (
-//             <button type="button" className="clear-btn" onClick={() => setFilterValue("")}>
-//               ✕
-//             </button>
-//           )}
-//         </div>
-
-//         {/* Search box on right side */}
-//         <div className="right-controls" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-//           <input
-//             type="text"
-//             placeholder="Search all fields..."
-//             value={searchTerm}
-//             onChange={(e) => setSearchTerm(e.target.value)}
-//             style={{ padding: "8px", fontSize: "14px" }}
-//           />
-//           <button className="add-user-btn" onClick={() => openModal()}>
-//             + Add New Member
-//           </button>
-//         </div>
-//       </div>
-
-//       {/* Table */}
-//       <table border="1" cellPadding="6" style={{ width: "100%", marginTop: "10px" }}>
-//         <thead>
-//           <tr>
-//             <th onClick={() => handleSort("id")} style={{ cursor: "pointer" }}>
-//               ID {getSortArrow("id")}
-//             </th>
-//             <th onClick={() => handleSort("name")} style={{ cursor: "pointer" }}>
-//               Name {getSortArrow("name")}
-//             </th>
-//             <th onClick={() => handleSort("email")} style={{ cursor: "pointer" }}>
-//               Email {getSortArrow("email")}
-//             </th>
-//             <th>Actions</th>
-//           </tr>
-//         </thead>
-//         <tbody>
-//           {currentUsers.length > 0 ? (
-//             currentUsers.map((user) => (
-//               <tr key={user.id}>
-//                 <td>{user.id}</td>
-//                 <td>{user.name}</td>
-//                 <td>{user.email}</td>
-//                 <td>
-//                   <button className="edit" onClick={() => openModal(user)}>
-//                     Edit
-//                   </button>
-//                   <button className="delete" onClick={() => handleDelete(user.id)}>
-//                     Delete
-//                   </button>
-//                 </td>
-//               </tr>
-//             ))
-//           ) : (
-//             <tr>
-//               <td colSpan="4" style={{ textAlign: "center" }}>
-//                 No users found
-//               </td>
-//             </tr>
-//           )}
-//         </tbody>
-//       </table>
-
-//       {/* Pagination */}
-//       {sortedUsers.length > usersPerPage && (
-//         <div className="pagination" style={{ marginTop: "10px", textAlign: "center" }}>
-//           <button onClick={goToPreviousPage} disabled={currentPage === 1}>
-//             ← Previous
-//           </button>
-//           <span style={{ margin: "0 10px" }}>
-//             Page {currentPage} of {totalPages}
-//           </span>
-//           <button onClick={goToNextPage} disabled={currentPage === totalPages}>
-//             Next →
-//           </button>
-//         </div>
-//       )}
-
-//       {/* Modal */}
-//       {showForm && (
-//         <div className={`modal-overlay ${isClosing ? "fade-out" : "fade-in"}`}>
-//           <div className={`modal-content ${isClosing ? "slide-out" : "slide-in"}`}>
-//             <UserForm
-//               fetchUsers={fetchUsers}
-//               editingUser={editingUser}
-//               setEditingUser={setEditingUser}
-//               closeModal={closeModal}
-//             />
-//           </div>
-//         </div>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default UserList;
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { getUsers, deleteUser } from "../api";
 import UserForm from "./UserForm";
 import "./UserList.css";
 
 const UserList = () => {
+  // State
   const [users, setUsers] = useState([]);
   const [editingUser, setEditingUser] = useState(null);
-
-  // Modal state
   const [showForm, setShowForm] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
 
-  // Filter state
-  const [filterField, setFilterField] = useState("name");
-  const [filterValue, setFilterValue] = useState("");
-
-  // Search state (box on right side)
   const [searchTerm, setSearchTerm] = useState("");
-
-  // Sorting state
-  const [sortConfig, setSortConfig] = useState({ key: null, mode: null });
-
-  // Pagination
+  const [debouncedSearch, setDebouncedSearch] = useState(searchTerm);
+  const [sortConfig, setSortConfig] = useState({ field: "id", order: "DESC" });
   const [currentPage, setCurrentPage] = useState(1);
-  const usersPerPage = 8;
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [displayedCount, setDisplayedCount] = useState(0);
+  const displayedCountRef = useRef(displayedCount);
+  const [totalPages, setTotalPages] = useState(1);
+  const [usersPerPage, setUsersPerPage] = useState(8);
+  const [loading, setLoading] = useState(false);
 
- 
-  const [fetchAll, setFetchAll] = useState(false);
+  const pageSizeOptions = [5, 8, 10];
+
+  // Debounce search input
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+      setCurrentPage(1);
+    }, 500);
+    return () => clearTimeout(handler);
+  }, [searchTerm]);
 
   // Fetch users
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
+    setLoading(true);
     try {
-      const res = await getUsers(fetchAll); // pass flag to API
-      const sortedUsers = [...res.data].sort((a, b) => b.id - a.id);
-      setUsers(sortedUsers);
+      const params = {
+        pageNumber: currentPage,
+        pageSize: usersPerPage,
+        searchTerm: debouncedSearch,
+        sortField: sortConfig.field,
+        sortOrder: sortConfig.order,
+      };
+
+      const res = await getUsers(params);
+      const usersArray = Array.isArray(res.data.data)
+        ? res.data.data
+        : Object.values(res.data.data || {});
+      setUsers(usersArray);
+      setTotalRecords(res.data.totalRecords || 0);
+      setTotalPages(res.data.totalPages || 1);
     } catch (err) {
-      console.error(err);
-      alert("Error fetching users.");
+      console.error("Error fetching users:", err);
+      setUsers([]);
+      setTotalRecords(0);
+      setTotalPages(1);
+    } finally {
+      setLoading(false);
     }
-  };
+  }, [currentPage, usersPerPage, debouncedSearch, sortConfig]);
 
   useEffect(() => {
     fetchUsers();
-  }, [fetchAll]);
+  }, [fetchUsers]);
 
-  // Delete user
+  // Animated counter
+  useEffect(() => {
+    let start = displayedCountRef.current;
+    const end = totalRecords;
+    if (start === end) return;
+
+    const increment = end > start ? 1 : -1;
+    const duration = 600;
+    const stepTime = Math.abs(Math.floor(duration / (end - start || 1)));
+
+    const timer = setInterval(() => {
+      start += increment;
+      displayedCountRef.current = start;
+      setDisplayedCount(start);
+      if (start === end) clearInterval(timer);
+    }, stepTime);
+
+    return () => clearInterval(timer);
+  }, [totalRecords]);
+
+  // Handlers
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this user?")) {
       try {
         await deleteUser(id);
         fetchUsers();
-      } catch (err) {
-        console.error(err);
+      } catch {
         alert("Error deleting user.");
       }
     }
   };
 
-  // Filter logic
-  const filteredUsers = users.filter((user) => {
-    if (!filterValue) return true;
-    const value = user[filterField]?.toString().toLowerCase();
-    return value.includes(filterValue.toLowerCase());
-  });
-
-  // Search logic
-  const searchedUsers = filteredUsers.filter((user) => {
-    if (!searchTerm) return true;
-    const term = searchTerm.toLowerCase();
-    return (
-      user.id.toString().includes(term) ||
-      user.name?.toLowerCase().includes(term) ||
-      user.email?.toLowerCase().includes(term)
-    );
-  });
-
-  // Sorting Logic
-  const sortedUsers = [...searchedUsers].sort((a, b) => {
-    if (!sortConfig.key) return 0;
-
-    const { key, mode } = sortConfig;
-
-    if (mode === "alphabetical") {
-      const aVal = a[key]?.toString().toLowerCase();
-      const bVal = b[key]?.toString().toLowerCase();
-      if (aVal < bVal) return -1;
-      if (aVal > bVal) return 1;
-      return 0;
-    }
-
-    if (mode === "original") {
-      return b.id - a.id;
-    }
-
-    return 0;
-  });
-
-  const handleSort = (key) => {
-    setSortConfig((prev) => {
-      if (prev.key === key) {
-        if (prev.mode === "alphabetical") return { key, mode: "original" };
-        else return { key, mode: "alphabetical" };
-      } else {
-        return { key, mode: "alphabetical" };
-      }
-    });
+  const handleSort = (field) => {
+    setSortConfig((prev) => ({
+      field,
+      order: prev.field === field && prev.order === "ASC" ? "DESC" : "ASC",
+    }));
+    setCurrentPage(1);
   };
 
-  const getSortArrow = (key) => {
-    if (sortConfig.key !== key) return "↕";
-    if (sortConfig.mode === "alphabetical") return "▲";
-    if (sortConfig.mode === "original") return "▼";
-    return "↕";
+  const getSortArrow = (field) => {
+    if (sortConfig.field !== field) return "↕";
+    return sortConfig.order === "ASC" ? "▲" : "▼";
   };
-
-  // Pagination
-  const totalPages = Math.ceil(sortedUsers.length / usersPerPage);
-  const startIndex = (currentPage - 1) * usersPerPage;
-  const currentUsers = sortedUsers.slice(startIndex, startIndex + usersPerPage);
 
   const goToNextPage = () => setCurrentPage((p) => Math.min(p + 1, totalPages));
   const goToPreviousPage = () => setCurrentPage((p) => Math.max(p - 1, 1));
 
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [filterValue, searchTerm]);
-
-  // Modal controls
   const openModal = (user = null) => {
     setEditingUser(user);
     setShowForm(true);
@@ -613,133 +130,152 @@ const UserList = () => {
   };
 
   return (
-    <div>
-      <h1>User Management</h1>
-
-      {/* 🔸 Top Bar */}
-      <div
-        className="top-bar"
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "10px",
-          gap: "10px",
-        }}
-      >
-        {/* Filter */}
-        <div className="filter-container" style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-          <label>Filter by:</label>
-          <select value={filterField} onChange={(e) => setFilterField(e.target.value)}>
-            <option value="id">ID</option>
-            <option value="name">Name</option>
-            <option value="email">Email</option>
-          </select>
-          <input
-            type="text"
-            placeholder={`Search by ${filterField}`}
-            value={filterValue}
-            onChange={(e) => setFilterValue(e.target.value)}
-          />
-          {filterValue && (
-            <button type="button" className="clear-btn" onClick={() => setFilterValue("")}>
-              ✕
-            </button>
-          )}
+    <div className="dashboard-container">
+      {/* Sidebar */}
+      <aside className="sidebar">
+        <div>
+          <div className="sidebar-title">UserPanel</div>
+          <ul>
+            <li className="active">Dashboard</li>
+            <li onClick={() => openModal()}>Add Member</li>
+          </ul>
         </div>
-
-        {/* Search + Add + Load toggle */}
-        <div className="right-controls" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <input
-            type="text"
-            placeholder="Search all fields..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ padding: "8px", fontSize: "14px" }}
-          />
-          <button className="add-user-btn" onClick={() => openModal()}>
-            + Add New Member
-          </button>
-          <button
-            className="load-btn"
-            onClick={() => setFetchAll((prev) => !prev)}
-          >
-            {fetchAll ? "Show Last 10" : "Load All"}
+        <div>
+          <button className="btn secondary" onClick={() => alert("Logged out")}>
+            Log out
           </button>
         </div>
-      </div>
+      </aside>
 
-      {/* Table */}
-      <table border="1" cellPadding="6" style={{ width: "100%", marginTop: "10px" }}>
-        <thead>
-          <tr>
-            <th onClick={() => handleSort("id")} style={{ cursor: "pointer" }}>
-              ID {getSortArrow("id")}
-            </th>
-            <th onClick={() => handleSort("name")} style={{ cursor: "pointer" }}>
-              Name {getSortArrow("name")}
-            </th>
-            <th onClick={() => handleSort("email")} style={{ cursor: "pointer" }}>
-              Email {getSortArrow("email")}
-            </th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentUsers.length > 0 ? (
-            currentUsers.map((user) => (
-              <tr key={user.id}>
-                <td>{user.id}</td>
-                <td>{user.name}</td>
-                <td>{user.email}</td>
-                <td>
-                  <button className="edit" onClick={() => openModal(user)}>
-                    Edit
-                  </button>
-                  <button className="delete" onClick={() => handleDelete(user.id)}>
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="4" style={{ textAlign: "center" }}>
-                No users found
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+      {/* Main Content */}
+      <main className="main-content">
+        <div className="header">
+          <div className="header-left">
+            <h1>User Management</h1>
+            <div className="record-counter">
+              <span className="record-label">Total Users</span>
+              <span className="record-count">{displayedCount}</span>
+            </div>
+          </div>
 
-      {/* Pagination */}
-      {sortedUsers.length > usersPerPage && (
-        <div className="pagination" style={{ marginTop: "10px", textAlign: "center" }}>
-          <button onClick={goToPreviousPage} disabled={currentPage === 1}>
-            ← Previous
-          </button>
-          <span style={{ margin: "0 10px" }}>
-            Page {currentPage} of {totalPages}
-          </span>
-          <button onClick={goToNextPage} disabled={currentPage === totalPages}>
-            Next →
-          </button>
-        </div>
-      )}
-
-      {/* Modal */}
-      {showForm && (
-        <div className={`modal-overlay ${isClosing ? "fade-out" : "fade-in"}`}>
-          <div className={`modal-content ${isClosing ? "slide-out" : "slide-in"}`}>
-            <UserForm
-              fetchUsers={fetchUsers}
-              editingUser={editingUser}
-              setEditingUser={setEditingUser}
-              closeModal={closeModal}
+          <div className="controls">
+            <input
+              className="search-input"
+              type="text"
+              placeholder="Search users..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
+            <button className="btn primary" onClick={() => openModal()}>
+              + Add Member
+            </button>
           </div>
         </div>
-      )}
+
+        {/* Table */}
+        <div className="table-wrapper">
+          {loading ? (
+            <div className="loading">Loading users...</div>
+          ) : (
+            <table className="user-table">
+              <thead>
+                <tr>
+                  <th onClick={() => handleSort("id")}>ID {getSortArrow("id")}</th>
+                  <th onClick={() => handleSort("name")}>Name {getSortArrow("name")}</th>
+                  <th onClick={() => handleSort("email")}>Email {getSortArrow("email")}</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {users.length > 0 ? (
+                  users.map((user) => (
+                    <tr key={user.id}>
+                      <td>{user.id}</td>
+                      <td>{user.name}</td>
+                      <td>{user.email}</td>
+                      <td>
+                        <button className="btn edit" onClick={() => openModal(user)}>
+                          Edit
+                        </button>
+                        <button className="btn delete" onClick={() => handleDelete(user.id)}>
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr key="no-data">
+                    <td colSpan="4" className="no-data">
+                      No users found
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          )}
+        </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="pagination">
+            <button onClick={goToPreviousPage} disabled={currentPage === 1}>
+              ← Prev
+            </button>
+
+            <span className="page-info">
+              Page{" "}
+              <input
+                type="number"
+                min="1"
+                max={totalPages}
+                value={currentPage}
+                onChange={(e) => {
+                  let page = parseInt(e.target.value, 10);
+                  if (isNaN(page)) page = 1;
+                  if (page < 1) page = 1;
+                  if (page > totalPages) page = totalPages;
+                  setCurrentPage(page);
+                }}
+                style={{ width: "50px", textAlign: "center" }}
+              />{" "}
+              of {totalPages}
+            </span>
+
+            <button onClick={goToNextPage} disabled={currentPage === totalPages}>
+              Next →
+            </button>
+
+            <select
+              value={usersPerPage}
+              onChange={(e) => {
+                setUsersPerPage(parseInt(e.target.value, 10));
+                setCurrentPage(1);
+              }}
+              style={{ marginLeft: "10px" }}
+            >
+              {pageSizeOptions.map((size) => (
+                <option key={size} value={size}>
+                  {size} per page
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        {/* Modal */}
+        {showForm && (
+          <div className={`modal-overlay ${isClosing ? "fade-out" : "fade-in"}`}>
+            <div className={`modal-content ${isClosing ? "slide-out" : "slide-in"}`}>
+              <UserForm
+                fetchUsers={fetchUsers}
+                editingUser={editingUser}
+                setEditingUser={setEditingUser}
+                closeModal={closeModal}
+              />
+            </div>
+          </div>
+        )}
+      </main>
     </div>
   );
 };

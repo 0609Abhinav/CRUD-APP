@@ -4,18 +4,43 @@ const sequelize = require("../db");
 const User = sequelize.define(
   "User",
   {
-    id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
-    name: { type: DataTypes.STRING(100), allowNull: false },
-    email: { type: DataTypes.STRING(100), allowNull: false, unique: true, validate: { isEmail: true } },
-    is_deleted: { type: DataTypes.BOOLEAN, defaultValue: false },
-    created_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    name: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+      validate: {
+        notEmpty: { msg: "Name cannot be empty" },
+      },
+    },
+    email: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+      unique: {
+        name: "unique_email",
+        msg: "Email already exists",
+      },
+      validate: {
+        isEmail: { msg: "Invalid email format" },
+      },
+    },
+    is_deleted: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
   },
   {
     tableName: "users",
     timestamps: true,
     createdAt: "created_at",
-    updatedAt: false,
+    updatedAt: "updated_at",
     indexes: [{ fields: ["created_at"] }],
+    defaultScope: {
+      where: { is_deleted: false },
+    },
   }
 );
 
